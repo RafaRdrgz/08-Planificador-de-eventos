@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<title>Planificador Eventos</title>
+	<script src="jquery-2.2.0.min.js"></script>
+	<script src="jquery-ui.js"></script>
+	<link rel="stylesheet" href="jquery-ui.css">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+		.contenedor {
+			max-width: 1200px;
+			margin: auto;
+		}
+		h1, h2 {
+			font-size: 2rem;
+			font-family: monospace;
+			margin: 1rem auto;
+			text-align: center;
+			color: white;
+			background: dimgray;
+		}
+		.notas {
+			border: 1px solid;
+			margin: 1rem;
+			padding: 1rem;
+			font-size: 1.1rem;
+			line-height: 1.2;
+			font-family: sans-serif;
+			background: linen;
+		}
+		.notas p {
+			margin: .5rem 1rem 1rem;
+			text-align: justify;
+		}
+		#btn_evnt {
+			background: dimgray;
+			color: white;
+			font-size: 1.2rem;
+			border: none;
+			padding: .2rem .4rem;
+			display: block;
+			margin: auto;
+		}
+		.ficha {
+			width: 60%;
+			border: 1px solid crimson;
+			padding: 1rem;
+			margin: 1rem auto;
+			text-align: center;
+			color: cadetblue;
+			font-size: 1.2rem;
+			font-family: monospace;
+		}
+		#ficha_dt {
+			position: absolute;
+			top: 0;
+			z-index: 9;
+			padding: 1rem;
+			left: 15%;
+			width: 70%;
+			background: chartreuse;
+			color: dimgray;
+			font-size: 1.2rem;
+			font-family: monospace;
+		}
+		#add_asis {
+			font-size: 1rem;
+			color: chartreuse;
+			background: dimgray;
+			border: none;
+			padding: .2rem .4rem;
+			display: block;
+			margin: auto;
+		}
+		.fondo {
+			position: fixed;
+			background: rgba(0,0,0,.75);
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+		.fondo .ficha {
+			width: 70%;
+			margin: 14rem auto;
+			text-align: center;
+			padding: 1rem;
+			opacity: 1;
+			color: chartreuse;
+			border: 7px double;
+			line-height: 2rem;
+		}
+		.fila-event {
+			display: flex;
+			justify-content: space-between;
+			margin: .5rem 0;
+		}
+		.fila-event input {
+			width: 60%;
+			height: 28px;
+			color: dimgray;
+			font-size: 1rem;
+		}
+		.invitado {
+		    text-align: left;
+		    margin: 0.5rem 2rem;
+		}
+		.invitado:hover {
+			cursor: move;
+		}
+		.elim-asis {
+			border: 1px solid;
+			margin: 1rem;
+			color: crimson;
+			padding: 0 .2rem;
+			cursor: pointer;
+			background: chartreuse;
+		}
+		.btn-form {
+			color: dimgray;
+			font-size: 1.2rem;
+			background: chartreuse;
+			border: 0;
+			margin: 1rem;
+			padding: 0 0.2rem;
+			font-family: monospace;
+			font-weight: bold;
+		}
+	</style>
+
+</head>
+<body>
+	<div class="contenedor">
+		<h1>Planificador de Eventos</h1>
+		<p>Herramienta sencilla para añadir un evento a nuestra agenda: Nombre del Evento, Fecha del Evento y Listado de asistentes. Permite añadir, eliminar y reordenar los asistentes, y contiene dos botones para confirmar o cancelar la operación.</p>
+		<div class="notas">
+			<h3>A tener en cuenta</h3>
+			<p>El documento contiene todo el HTML y CSS necesario para su desarrollo. Sólo tienes que añadir el código Jquery requerido. Aunque si lo crees conveniente puedes cambiar el HTML o CSS a tu gusto. <br> En el <em>head</em> del documento están enlazados los archivos necesarios para que este documento funcione correctamente, son tres: <strong>jquery.js, jquery-ui.js, jquery-ui.css</strong>, no cambies los nombres ni las rutas de estos archivos. </p>
+			<h4>Elemento datepicker</h4>
+			<p>Para seleccionar la fecha del evento usa el componente de jquery datepicker. Sólo tienes que asociarlo al input donde quieres recoger la fecha con la siguiente expresión: <br>
+			<strong>$( "#id_del_input" ).datepicker($.datepicker.regional[ "es" ]);</strong></p>
+			<h4>Elementos Reordenables</h4>
+			<p>Para poder hacer reordenables los elementos de la lista usamos otro de los componentes de jquery-ui. En este caso es el método <strong>sortable()</strong>. Para hacer que los elementos <em>li</em> de un contenedor <em>ol</em> (<em><strong>por ejemplo</strong></em>) sean ordenables, sólo  tenemos que indicarle a ese contenedor <em>ol</em> que sea <em>sortable()</em>. Algo así: <br> <strong>$("#mi_lista_ol").sortable();</strong></p>
+		</div>
+		<h2>Crear Evento</h2>
+		<p>Pulsa en el botón para añadir los datos del evento: Nombre, fecha y participantes.</p>
+		<button id="btn_evnt">Nuevo Evento</button>
+			<div id="ficha_dt">
+				<div class="datos">
+					<div class="fila-event"><strong>Nombre Evento: </strong><input type="text" id="nom_evnt"></div>
+					<div class="fila-event"><strong>Fecha Evento: </strong><input type="text" id="fecha_evnt"></div>
+					<div class="fila-event"><strong>Asistente:</strong> <input type="text" id="nom_lista"></div>
+					<button id="add_asis">Añadir Asistente</button>
+				</div>
+		</div>
+		<h2>Agenda</h2>
+		<div id="agenda" class="lista-entradas">
+			<section class="entrada">
+				<div class="ficha">
+					<div class="fila-entrada">
+						<h3 class="tit-entrada">Merienda en Clase</h3>
+					</div>
+					<div class="fila-entrada">
+						<h3 class="tit-entrada">05-08-2022</h3>
+					</div>
+					<div class="fila-entrada">
+						<h3>Asistentes</h3>
+						<ol id="muestra">
+							<li class="invitado">Jenni</li>
+							<li class="invitado">Eloy</li>
+							<li class="invitado">Juanjo</li>
+							<li class="invitado">Charo</li>
+							<li class="invitado">Ana</li>
+							<li class="invitado">Marisa</li>
+							<li class="invitado">Lucía</li>
+							<li class="invitado">Susana</li>
+							<li class="invitado">Bea</li>
+							<li class="invitado">Alberto</li>
+						</ol>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+		<script>
+		$( document ).ready(function() {
+			var clas_fila = "fila-entrada";
+			var clas_tit = "tit-entrada";
+			var clas_fic = "ficha";
+			var clas_elim = "elim-asis";
+			var clas_btn =  "btn-form";
+			
+			function creaEvento() {
+				$("#ficha_dt").fadeIn(1000);
+				$(".notas").fadeOut(1000);
+				var agenda =  $("#agenda");
+				var entrada = $("<section>");
+				entrada.addClass("fondo");
+				var ficha = $("<div>");
+				ficha.addClass(clas_fic);
+
+				//titulo
+				tit = $("<div>");
+				tit.addClass(clas_fila);
+				h3_t = $("<h3>");
+				h3_t.addClass(clas_tit);
+				tit.append(h3_t);
+				//fecha
+				fecha = $("<div>");
+				fecha.addClass(clas_fila);
+				h3_f = $("<h3>");
+				h3_f.addClass(clas_tit);
+				fecha.append(h3_f);
+				//invitado
+				asist = $("<div>");
+				asist.addClass(clas_fila);
+				h3_a = $("<h3>");
+				h3_a.addClass(clas_tit);
+				h3_a.text("Asistentes");
+				ol = $("<ol>");
+				ol.sortable();
+				asist.append(h3_a, ol);
+				//botones
+				var canc_btn = $("<button>");
+				canc_btn.on("click", salEvento);
+				canc_btn.text("Cancelar");
+				canc_btn.addClass(clas_btn);
+				var conf_btn = $("<button>");
+				conf_btn.on("click",muevEvento);
+				conf_btn.text("Confirmar");
+				conf_btn.addClass(clas_btn);
+				var fila_btn = $("<div>");
+				fila_btn.addClass(clas_fila);
+				fila_btn.append( canc_btn, conf_btn);
+
+				ficha.append(tit, fecha, asist, fila_btn);
+				entrada.append(ficha);
+				agenda.append(entrada);
+			}
+			function listaInvit() {
+				//creo titulo
+				var nom_event = $("#nom_evnt").val();
+				h3_t.text(nom_event);
+
+				//creo fecha
+				var fecha_evnt = $("#fecha_evnt").val();
+				h3_f.text(fecha_evnt);
+
+				//creo invitado
+				var invitado = $("#nom_lista").val();
+				var lista = $("<li>");
+				lista.addClass("invitado");
+				
+				lista.text(invitado);
+
+				var menos = $("<span>");
+				menos.text("-");
+				menos.addClass(clas_elim);
+				menos.on("click",eliminaInvit);
+
+				lista.append(menos);
+				ol.append( lista);
+
+				$("#nom_lista").val("");
+				$("#nom_lista").focus();
+
+			}
+			function eliminaInvit() {
+				$(this).parent().remove();
+			}
+
+			function muevEvento() {
+				var padre = $(this).parents("section");
+				var hijos = padre.find("li").length;
+				if (hijos == 0) {
+					$(this).parents("section").remove();
+					$("#ficha_dt").hide();
+				}
+				$("section").removeClass("fondo");
+				$(".elim-asis").remove();
+				$(".btn-form").parent().remove();
+				$("#ficha_dt").hide();
+
+			}
+			function salEvento() {
+				$(this).parents("section").remove();
+				$("#ficha_dt").hide();
+
+			}
+
+			//EVENTOS
+
+			$("#add_asis").on("click",listaInvit);
+
+			$("#btn_evnt").on("click",creaEvento);
+
+			//INICIO
+
+
+			$("#ficha_dt").hide();
+			$( "#fecha_evnt" ).datepicker($.datepicker.regional[ "es" ]);
+			$("#muestra").sortable();
+		});
+
+	</script>
+</body>
+</html>

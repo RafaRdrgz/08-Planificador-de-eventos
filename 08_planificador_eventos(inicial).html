@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<title>Planificador Eventos</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+		.contenedor {
+			max-width: 1200px;
+			margin: auto;
+		}
+		h1, h2 {
+			font-size: 2rem;
+			font-family: monospace;
+			margin: 1rem auto;
+			text-align: center;
+			color: white;
+			background: dimgray;
+		}
+		.notas {
+			border: 1px solid;
+			margin: 1rem;
+			padding: 1rem;
+			font-size: 1.1rem;
+			line-height: 1.2;
+			font-family: sans-serif;
+			background: linen;
+		}
+		.notas p {
+			margin: .5rem 1rem 1rem;
+			text-align: justify;
+		}
+		#btn_evnt {
+			background: dimgray;
+			color: white;
+			font-size: 1.2rem;
+			border: none;
+			padding: .2rem .4rem;
+			display: block;
+			margin: auto;
+		}
+		.ficha {
+			width: 60%;
+			border: 1px solid crimson;
+			padding: 1rem;
+			margin: 1rem auto;
+			text-align: center;
+			color: cadetblue;
+			font-size: 1.2rem;
+			font-family: monospace;
+		}
+		#ficha_dt {
+			position: absolute;
+			top: 0;
+			z-index: 9;
+			padding: 1rem;
+			left: 15%;
+			width: 70%;
+			background: chartreuse;
+			color: dimgray;
+			font-size: 1.2rem;
+			font-family: monospace;
+		}
+		#add_asis {
+			font-size: 1rem;
+			color: chartreuse;
+			background: dimgray;
+			border: none;
+			padding: .2rem .4rem;
+			display: block;
+			margin: auto;
+		}
+		.fondo {
+			position: fixed;
+			background: rgba(0,0,0,.75);
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+		.fondo .ficha {
+			width: 70%;
+			margin: 14rem auto;
+			text-align: center;
+			padding: 1rem;
+			opacity: 1;
+			color: chartreuse;
+			border: 7px double;
+			line-height: 2rem;
+		}
+		.fila-event {
+			display: flex;
+			justify-content: space-between;
+			margin: .5rem 0;
+		}
+		.fila-event input {
+			width: 60%;
+			height: 28px;
+			color: dimgray;
+			font-size: 1rem;
+		}
+		.invitado {
+		    text-align: left;
+		    margin: 0.5rem 2rem;
+		}
+		.invitado:hover {
+			cursor: move;
+		}
+		.elim-asis {
+			border: 1px solid;
+			margin: 1rem;
+			color: crimson;
+			padding: 0 .2rem;
+			cursor: pointer;
+			background: chartreuse;
+		}
+		.btn-form {
+			color: dimgray;
+			font-size: 1.2rem;
+			background: chartreuse;
+			border: 0;
+			margin: 1rem;
+			padding: 0 0.2rem;
+			font-family: monospace;
+			font-weight: bold;
+		}
+	</style>
+
+</head>
+<body>
+	<div class="contenedor">
+		<h1>Planificador de Eventos</h1>
+		<p>Herramienta sencilla para añadir un evento a nuestra agenda: Nombre del Evento, Fecha del Evento y Listado de asistentes. Permite añadir, eliminar y reordenar los asistentes, y contiene dos botones para confirmar o cancelar la operación.</p>
+		<div class="notas">
+			<h3>A tener en cuenta</h3>
+			<p>El documento contiene todo el HTML y CSS necesario para ver una muestra de lo que hay que hacer. Pero puedes modificarlo como quieras </p>
+			<h4>Elemento datepicker</h4>
+			<p>Para seleccionar la fecha del evento podemos usar un input de tipo <em>date</em> o buscar un componente de React datepicker.</p>
+			<h4>Elementos Reordenables</h4>
+			<p>Para poder hacer reordenables los elementos de la lista usamos otro de los componentes  desiponibleds en las librerias de React. Hay varias disponibles, solo tienes que hacer una búsqueda de componentes <em>Drag and Drop</em> de React.</p>
+		</div>
+		<h2>Crear Evento</h2>
+		<p>Pulsa en el botón para añadir los datos del evento: Nombre, fecha y participantes.</p>
+		<button id="btn_evnt">Nuevo Evento</button>
+			<div id="ficha_dt">
+				<div class="datos">
+					<div class="fila-event"><strong>Nombre Evento: </strong><input type="text" id="nom_evnt"></div>
+					<div class="fila-event"><strong>Fecha Evento: </strong><input type="text" id="fecha_evnt"></div>
+					<div class="fila-event"><strong>Asistente:</strong> <input type="text" id="nom_lista"></div>
+					<button id="add_asis">Añadir Asistente</button>
+				</div>
+		</div>
+		<h2>Agenda</h2>
+		<div id="agenda" class="lista-entradas">
+			<section class="entrada">
+				<div class="ficha">
+					<div class="fila-entrada">
+						<h3 class="tit-entrada">Merienda en Clase</h3>
+					</div>
+					<div class="fila-entrada">
+						<h3 class="tit-entrada">05-08-2022</h3>
+					</div>
+					<div class="fila-entrada">
+						<h3>Asistentes</h3>
+						<ol id="muestra">
+							<li class="invitado">Jenni</li>
+							<li class="invitado">Eloy</li>
+							<li class="invitado">Juanjo</li>
+							<li class="invitado">Charo</li>
+							<li class="invitado">Ana</li>
+							<li class="invitado">Marisa</li>
+							<li class="invitado">Lucía</li>
+							<li class="invitado">Susana</li>
+							<li class="invitado">Bea</li>
+							<li class="invitado">Alberto</li>
+						</ol>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+
+</body>
+</html>
